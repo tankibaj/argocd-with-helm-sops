@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    tags: [ v* ]
+
+env:
+#  REGISTRY: ghcr.io
+#  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: argocd
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to registry
+        uses: docker/login-action@v2
+        with:
+#          registry: ${{ env.REGISTRY }}
+#          username: ${{ github.actor }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Extract metadata for the image
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}
+#          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
