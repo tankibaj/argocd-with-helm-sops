@@ -1,6 +1,6 @@
 # ArgoCD with Helm Sops
 
-ArgoCD image with Helm-Sops support. [Helm Sops](https://github.com/camptocamp/helm-sops) is a Helm wrapper that decrypts SOPs encrypted value files before invoking Helm.
+ArgoCD image with Helm-Sops support. Helm Sops is a Helm wrapper that decrypts SOPs encrypted value files before invoking Helm.
 
 The following tools have been added to the image:
 
@@ -9,17 +9,10 @@ The following tools have been added to the image:
 
 ArgoCD repository server binary is wrapped by a shell script which can import a GPG private key if it exists. The key must be located at `/app/config/gpg/privkey.asc`.
 
-## Usage
 
-### Encrypting Helm value files
+### Custom image
 
-Read [Helm Sops documentation](https://github.com/camptocamp/helm-sops) to start using Helm encrypted value files.
-
-### Deploy ArgoCD using the Helm chart
-
-#### Custom image
-
-To use this custom image when deploying Argo CD using the [Helm chart](https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd), add the following lines to the chart value file:
+To use this custom sops supported image when deploying ArgoCD using the [Helm chart](https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd), add the following lines to the chart value file:
 
 ```yaml
 global:
@@ -28,9 +21,26 @@ global:
     tag: "v2.5.6"
 ```
 
-#### Sops with an AWS KMS key
+### Sops with an AWS KMS key
 
-In order to use Sops with an AWS KMS key and if [instance profiles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html) cannot be used, add the following lines to the chart value file:
+#### Method 1: [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+This is an example values file for the ArgoCD Server [Helm chart](https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd):
+
+```bash
+repoServer:
+  serviceAccount:
+    create: true
+    name: "argocd-repo-server"
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/iam-role-name
+    automountServiceAccountToken: true
+```
+
+#### Method 2: [instance profiles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html)
+
+#### Method 3: If IRSA/Instance profiles are not available
+
+Add the following lines to the chart value file:
 
 ```yaml
 repoServer:
@@ -57,7 +67,7 @@ configs:
       aws.secretAccessKey: <Secret Access Key>
 ```
 
-#### Sops with a GPG key
+### Sops with a GPG key
 
 In order to use Sops with a GPG key, add the following lines to the chart value file:
 
