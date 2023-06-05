@@ -27,3 +27,23 @@ jobs:
             https://github.com/argoproj/argo-cd/releases/tag/${{ github.ref }}
           draft: false
           prerelease: false
+
+      - name: Get tag from ref
+        id: get_tag
+        run: |
+          echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+
+      - name: Update Dockerfile
+        run: |
+          sed -i 's|quay.io/argoproj/argocd:v.*|quay.io/argoproj/argocd:${{ steps.get_tag.outputs.tag }}|g' Dockerfile
+
+      - name: Update README.md
+        run: |
+          sed -i 's|tag: "v.*"|tag: "${{ steps.get_tag.outputs.tag }}"|g' README.md
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Bump up argocd version to ${{ steps.get_tag.outputs.tag }}"
+          git push
