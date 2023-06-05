@@ -1,0 +1,46 @@
+name: Create Tag and Release
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  create-tag-and-release:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@latest
+
+      - name: Set release tag
+        id: release_tag
+        run: |
+          RELEASE_TAG="${{ github.head_ref }}"
+          echo "::set-output name=tag::${RELEASE_TAG}"
+
+      - name: Create tag
+        uses: actions/github-script@latest
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.release_tag.outputs.tag }}',
+              sha: context.sha
+            })
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          release_name: ${{ steps.release_tag.outputs.tag }}
+          body: |
+            Release information: https://github.com/argoproj/argo-cd/releases/tag/${{ steps.release_tag.outputs.tag }}
+          draft: false
+          prerelease: false
