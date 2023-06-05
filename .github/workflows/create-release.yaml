@@ -1,4 +1,4 @@
-name: Create Release on Tag Push
+name: Create release
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
         id: create_release
         uses: actions/create-release@latest
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_OF_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}

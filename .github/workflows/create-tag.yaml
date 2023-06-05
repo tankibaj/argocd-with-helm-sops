@@ -1,0 +1,34 @@
+name: Create tag
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set release tag
+        id: release_tag
+        run: |
+          RELEASE_TAG="${{ github.head_ref }}"
+          echo "::set-output name=tag::${RELEASE_TAG}"
+
+      - name: Create tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${{ steps.release_tag.outputs.tag }}`,
+              sha: context.sha
+            })

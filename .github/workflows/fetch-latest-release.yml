@@ -1,0 +1,52 @@
+name: Fetch latest release
+
+on:
+  schedule:
+    - cron: '0 */12 * * *' # Run every 12 hours
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get latest release tag
+      id: latest_release
+      run: |
+        LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | jq -r .tag_name)
+        echo "::set-output name=tag::${LATEST_RELEASE}"
+
+    - name: Get current Dockerfile tag
+      id: dockerfile_tag
+      run: |
+        DOCKERFILE_TAG=$(grep -oP 'quay.io/argoproj/argocd:v\K.*' Dockerfile)
+        echo "::set-output name=tag::${DOCKERFILE_TAG}"
+
+    - name: Check if tags match
+      id: check_tags
+      run: |
+        if [ "${{ steps.latest_release.outputs.tag }}" != "${{ steps.dockerfile_tag.outputs.tag }}" ]; then
+          echo "::set-output name=match::false"
+        else
+          echo "::set-output name=match::true"
+        fi
+
+    - name: Update Dockerfile and README.md
+      if: steps.check_tags.outputs.match == 'false'
+      run: |
+        sed -i 's|quay.io/argoproj/argocd:v.*|quay.io/argoproj/argocd:${{ steps.latest_release.outputs.tag }}|g' Dockerfile
+        sed -i 's|tag: "v.*"|tag: "${{ steps.latest_release.outputs.tag }}"|g' README.md
+
+    - name: Create Pull Request
+      if: steps.check_tags.outputs.match == 'false'
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+        commit-message: "Update ArgoCD version to ${{ steps.latest_release.outputs.tag }}"
+        branch: ${{ steps.latest_release.outputs.tag }}
+        title: "argocd ${{ steps.latest_release.outputs.tag }}"
+        body: |
+          Release information: https://github.com/argoproj/argo-cd/releases/tag/${{ steps.latest_release.outputs.tag }}

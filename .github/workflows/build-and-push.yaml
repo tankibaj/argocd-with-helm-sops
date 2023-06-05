@@ -1,8 +1,9 @@
-name: CI
+name: Build and push to registry
 
 on:
   push:
     tags: [ v* ]
+  workflow_dispatch: # Manual trigger
 
 env:
 #  REGISTRY: ghcr.io
