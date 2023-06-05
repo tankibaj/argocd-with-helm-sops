@@ -3,6 +3,7 @@ name: Update ArgoCD Version
 on:
   schedule:
     - cron: '0 */12 * * *' # Run every 12 hours
+  workflow_dispatch: # Manual trigger
 
 jobs:
   update-version:
