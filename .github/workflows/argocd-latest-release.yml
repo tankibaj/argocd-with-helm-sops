@@ -1,4 +1,4 @@
-name: Update ArgoCD Version
+name: Fetch ArgoCD latest release
 
 on:
   schedule:
@@ -37,7 +37,7 @@ jobs:
     - name: Update Dockerfile and README.md
       if: steps.check_tags.outputs.match == 'false'
       run: |
-        sed -i 's|quay.io/argoproj/argocd:v.*|quay.io/argoproj/argo-cd:${{ steps.latest_release.outputs.tag }}|g' Dockerfile
+        sed -i 's|quay.io/argoproj/argocd:v.*|quay.io/argoproj/argocd:${{ steps.latest_release.outputs.tag }}|g' Dockerfile
         sed -i 's|tag: "v.*"|tag: "${{ steps.latest_release.outputs.tag }}"|g' README.md
 
     - name: Create Pull Request
