@@ -26,12 +26,12 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-            github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.release_tag.outputs.tag }}',
-              sha: context.sha
-            })
+            const ref = `refs/tags/${{ steps.release_tag.outputs.tag }}`;
+            const sha = context.sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
+            await octokit.git.createRef({ owner, repo, ref, sha });
 
       - name: Create release
         id: create_release
