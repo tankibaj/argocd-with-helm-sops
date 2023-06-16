@@ -1,4 +1,4 @@
-name: Create Tag and Release
+name: Create tag and release
 
 on:
   pull_request:

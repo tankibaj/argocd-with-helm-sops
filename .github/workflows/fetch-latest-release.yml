@@ -1,4 +1,4 @@
-name: Fetch ArgoCD latest release
+name: Fetch latest release
 
 on:
   schedule:
