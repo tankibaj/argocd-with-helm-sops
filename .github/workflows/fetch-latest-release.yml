@@ -45,8 +45,8 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.GH_TOKEN }}
-        commit-message: "Update ArgoCD version to ${{ steps.latest_release.outputs.tag }}"
+        commit-message: "chore: bump up argocd to v${{ steps.latest_release.outputs.tag }}"
         branch: ${{ steps.latest_release.outputs.tag }}
-        title: "argocd ${{ steps.latest_release.outputs.tag }}"
+        title: "chore: bump up argocd to v${{ steps.latest_release.outputs.tag }}"
         body: |
           Release information: https://github.com/argoproj/argo-cd/releases/tag/${{ steps.latest_release.outputs.tag }}
