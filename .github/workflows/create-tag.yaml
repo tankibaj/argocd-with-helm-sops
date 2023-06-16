@@ -1,4 +1,4 @@
-name: Create tag and release
+name: Create tag
 
 on:
   pull_request:
@@ -40,16 +40,3 @@ jobs:
 #            const repo = context.repo.repo;
 #            const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
 #            await octokit.git.createRef({ owner, repo, ref, sha });
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          tag_name: ${{ steps.release_tag.outputs.tag }}
-          release_name: ${{ steps.release_tag.outputs.tag }}
-          body: |
-            Release information: https://github.com/argoproj/argo-cd/releases/tag/${{ steps.release_tag.outputs.tag }}
-          draft: false
-          prerelease: false
