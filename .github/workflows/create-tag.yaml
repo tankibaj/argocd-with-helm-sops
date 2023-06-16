@@ -26,17 +26,9 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-#            const {DIST_VERSION} = process.env
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${{ steps.release_tag.outputs.tag }}`,
               sha: context.sha
             })
-#          script: |
-#            const ref = `refs/tags/${{ steps.release_tag.outputs.tag }}`;
-#            const sha = context.sha;
-#            const owner = context.repo.owner;
-#            const repo = context.repo.repo;
-#            const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
-#            await octokit.git.createRef({ owner, repo, ref, sha });
