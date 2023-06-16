@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - closed
+  workflow_dispatch: # Manual trigger
 
 jobs:
   create-tag-and-release:
