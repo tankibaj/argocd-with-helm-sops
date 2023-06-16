@@ -3,32 +3,26 @@ name: Create release
 on:
   push:
     tags: [ v* ]
-  workflow_dispatch: # Manual trigger
 
 jobs:
-  release:
+  build:
+
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set release tag
-        id: release_tag
-        run: |
-          RELEASE_TAG="${{ github.head_ref }}"
-          echo "::set-output name=tag::${RELEASE_TAG}"
-
-      - name: Create release
+      - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          tag_name: ${{ steps.release_tag.outputs.tag }}
-          release_name: ${{ steps.release_tag.outputs.tag }}
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
           body: |
-            Release information: https://github.com/argoproj/argo-cd/releases/tag/${{ steps.release_tag.outputs.tag }}
+            ${{ github.event.head_commit.message }}
+            https://github.com/argoproj/argo-cd/releases/tag/${{ github.ref }}
           draft: false
           prerelease: false
