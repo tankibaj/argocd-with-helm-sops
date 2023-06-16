@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Manual trigger
 
 jobs:
-  create-tag-and-release:
+  tag:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
 
