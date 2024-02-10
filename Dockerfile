@@ -6,6 +6,7 @@ RUN wget -O /tmp/helmfile https://github.com/roboll/helmfile/releases/download/v
 RUN wget -O /tmp/yq https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 && chmod +x /tmp/yq
 
 FROM quay.io/argoproj/argocd:v2.10.0
+
 USER root
 COPY argocd-repo-server-wrapper /usr/local/bin/
 COPY argocd-helmfile /usr/local/bin/
