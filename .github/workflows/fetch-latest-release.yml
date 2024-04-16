@@ -45,7 +45,7 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.GH_TOKEN }}
-        commit-message: "chore: bump up argocd to v${{ steps.latest_release.outputs.tag }}"
+        commit-message: "chore: bump up argocd to ${{ steps.latest_release.outputs.tag }}"
         branch: ${{ steps.latest_release.outputs.tag }}
         title: "chore: bump up argocd to ${{ steps.latest_release.outputs.tag }}"
         body: |
