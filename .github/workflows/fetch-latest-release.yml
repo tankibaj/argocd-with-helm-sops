@@ -2,7 +2,7 @@ name: Fetch latest release
 
 on:
   schedule:
-    - cron: '0 */12 * * *' # Run every 12 hours
+    - cron: '0 * * * *' # Evey hour
   workflow_dispatch: # Manual trigger
 
 jobs:
