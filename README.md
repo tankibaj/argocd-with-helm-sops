@@ -18,7 +18,7 @@ To use this custom sops supported image when deploying ArgoCD using the [Helm ch
 global:
   image:
     repository: "thenaim/argocd"
-    tag: "v2.12.0"
+    tag: "v2.11.10"
 ```
 
 ### Sops with an AWS KMS key
